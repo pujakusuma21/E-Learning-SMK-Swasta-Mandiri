@@ -1,0 +1,83 @@
+{% extends "layout-private.html" %}
+
+{% block title %}
+Materi - {{ parent() }}
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <div class="module-head">
+        <h3>Absensi</h3>
+    </div>
+    <div class="module-body">
+        {{ get_flashdata('materi')|raw }}
+
+        <div class="bs-callout bs-callout-info">
+            {% if is_siswa() == false %}
+            <div class="btn-group pull-right" style="margin-top:-5px;">
+                {{ anchor('absensi/add/file', 'Isi Absensi', {'class' : 'btn btn-primary'})|raw }}
+            </div>
+            {% endif %}
+            
+
+            
+
+        <br>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th width="7%">No</th>
+                    <th>Nama S</th>
+                    <th width="15%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for no, m in absensi %}
+
+                {% if is_admin() == true %}
+                    {% set action_edit = true %}
+                    {% set action_delete = true %}
+                {% elseif is_pengajar() == true %}
+                    {% if m.pengajar_id == get_sess_data('user', 'id') %}
+                        {% set action_edit = true %}
+                        {% set action_delete = true %}
+                    {% else %}
+                        {% set action_edit = false %}
+                        {% set action_delete = false %}
+                    {% endif %}
+                {% elseif is_siswa() == true %}
+                    {% if m.siswa_id == get_sess_data('user', 'id') %}
+                        {% set action_edit = true %}
+                        {% set action_delete = true %}
+                    {% else %}
+                        {% set action_edit = false %}
+                        {% set action_delete = false %}
+                    {% endif %}
+                {% endif %}
+
+                <tr>
+                    <td><b>{{ no+1 }}</b></td>
+                    <td>
+                        {{ m.tanggal}}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                      
+
+                            {% if action_edit == true %}
+                                {{ anchor('absensi/edit/' ~ m.id,'<i class="icon-edit"></i> Edit', {'class' : 'btn btn-default btn-small'})|raw }}
+                            {% endif %}
+                            
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        {{ pagination|raw }}
+
+    </div>
+</div>
+{% endblock %}

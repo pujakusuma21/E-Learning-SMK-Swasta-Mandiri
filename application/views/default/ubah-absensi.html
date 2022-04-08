@@ -1,0 +1,72 @@
+{% extends "layout-private.html" %}
+
+{% block title %}
+Tambah Absensi - {{ parent() }}
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <div class="module-head">
+        <h3>{{ anchor('absensi', 'Absensi')|raw }} / Edit Absensi</h3>
+    </div>
+    <div class="module-body">
+        {{ get_flashdata('materi')|raw }}
+
+        {{ form_open_multipart('absensi/edit/'~absensi_id, {'class' : 'form-horizontal row-fluid', 'id' :
+        'form-materi'})|raw }}
+        <div class="control-group">
+            <label class="control-label">
+                <td width="50">Tanggal</td>
+            </label>
+            <div class="controls">
+                <input type="date" class="form-control" readonly="true" name="tanggal" value="{{ date('Y-m-d',strtotime(absensi.tanggal))}}">
+                <br>{{ form_error('tanggal')|raw }}
+            </div>
+            <br>
+            <div class="control-group">
+                <div>
+
+                    <table class="table" cellpadding="10">
+                        <thead>
+                            <tr>
+                                <td>No</td>
+                                <td>Nama Siswa</td>
+                                <td>S</td>
+                                <td>I</td>
+                                <td>H</td>
+                                <td>A</td>
+                                <td>Keterangan</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for no,siswa in absensi_siswa %}
+                            <input type="hidden" name="id[]" value="{{ siswa.ids }}">
+                            <tr>
+                                <td>{{ no+1 }}</td>
+                                <td>{{ siswa.nama }}</td>
+                                <td><input class="form-control" type="radio" name="absen[{{siswa.ids}}]" value="1" {{(siswa.jenis_kehadiran == 1) ? 'checked="checked"' : '' }}></td>
+                                <td><input class="form-control" type="radio" name="absen[{{siswa.ids}}]" value="2" {{(siswa.jenis_kehadiran == 2) ? 'checked="checked"' : '' }}></td>
+                                <td><input class="form-control" type="radio" name="absen[{{siswa.ids}}]" value="3" {{(siswa.jenis_kehadiran == 3) ? 'checked="checked"' : '' }}></td>
+                                <td><input class="form-control" type="radio" name="absen[{{siswa.ids}}]" value="4" {{(siswa.jenis_kehadiran == 4) ? 'checked="checked"' : '' }}></td>
+                                <td><input type="text" class="form-control" name="keterangan[]" value="{{ siswa.ket }}"></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div><br>
+                <div class="form-group">
+                    <button type="submit" name="submit" value="submit" class="form-control btn btn-primary pull-right">Submit</span></button></p>
+                </div>
+                {{ form_close()|raw }}
+
+            </div>
+        </div>
+        {% endblock %}
+
+        {% block js %}
+        {% if preview_id is not empty %}
+        <script type="text/javascript">
+            window.open(site_url + '/materi/detail/{{ preview_id }}', '_tab');
+        </script>
+        {% endif %}
+        {% endblock %}
